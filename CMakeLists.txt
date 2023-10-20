@@ -11,16 +11,21 @@ message(STATUS "CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}")
 include(FetchContent)
 include(cmake/nlohmann_json.cmake)
 #include(cmake/boost.cmake)
+include(cmake/simple_color.cmake)
+
+message(STATUS "SIMPLE_COLOR_INCLUDE ${SIMPLE_COLOR_INCLUDE}")
 
 add_library(common STATIC
         src/common.cpp include/common/common.h
         src/ip.cpp include/common/ip.h
+        src/dates.cpp include/common/dates.h
 )
 target_include_directories(common
         PRIVATE
         ${COMMON_INCLUDE}
         ${NLOHMANN_JSON_INCLUDE}
 #        ${BOOST_ASIO_INCLUDE}
+        ${SIMPLE_COLOR_INCLUDE}
 )
 
 install(TARGETS common DESTINATION lib)
