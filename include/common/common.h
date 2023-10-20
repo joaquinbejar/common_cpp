@@ -10,6 +10,7 @@
 #include <simple_color/color.h>
 #include <iostream>
 #include <sstream>
+#include <random>
 
 using json = nlohmann::json;
 
@@ -46,19 +47,14 @@ namespace common {
         return ss.str();
     }
 
-    // Function to convert Vector to Set
     template<typename T>
-    std::set<T> convertToSet(std::vector<T> v) {
-        // Declaring the set
-        // using range of vector
-        std::set<T> s(v.begin(), v.end());
-
-        // Return the resultant Set
-        return s;
+    std::set<T> vector_to_set(const std::vector<T>& v) {
+        return {v.begin(), v.end()};
     }
 
+
     template<typename T>
-    std::set<T> joinSets(std::set<T> v1, std::set<T> v2) {
+    std::set<T> join_sets(const std::set<T>& v1, const std::set<T>& v2) {
         std::set<T> output;
         std::set_union(v1.begin(), v1.end(),
                        v2.begin(), v2.end(),
@@ -66,16 +62,24 @@ namespace common {
         return output;
     }
 
+
     template<typename T>
-    std::string setTojson(std::set<T> s) {
+    std::string to_string_for_json(const T &item) {
+        return std::to_string(item);
+    }
+
+    std::string to_string_for_json(const std::string &item);
+
+    template<typename T>
+    std::string set_to_json(std::set<T> s) {
         std::string output = "[";
-        for (T item: s) {
-            output.append("\"");
-            output.append(item);
-            output.append("\"");
+        for (const T &item : s) {
+            output.append(to_string_for_json(item));
             output.append(",");
         }
-        output.erase(output.end() - 1);
+        if (!s.empty()) {
+            output.erase(output.end() - 1);  // remove last comma
+        }
         output.append("]");
         return output;
     }

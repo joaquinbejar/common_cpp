@@ -54,6 +54,24 @@ namespace common {
         return std::to_string(hashValue);
     }
 
+    std::string key_generator() {
+        std::string abc = "abcdefghijklmnopqrstuvwxyz";
+        int size = 20;
+        int each = 5;
+        std::string key;
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        for (int i = 0; i < size; i++) {
+            if (i > 0 && i % each == 0) {
+                key += "_";
+            }
+            std::uniform_int_distribution<> distribucion(0, (int) abc.size() - 1);
+            int indice = distribucion(gen);
+            key += abc[indice];
+        }
+        return key;
+    }
+
     std::string get_env_variable_string(std::string const &key, std::string const &default_value) {
         char *c_queue = getenv(key.c_str());
         if (c_queue != nullptr) {
@@ -124,6 +142,11 @@ namespace common {
         } else {
             return default_value;
         }
+    }
+
+
+    std::string to_string_for_json(const std::string &item) {
+        return "\"" + item + "\"";
     }
 
 }
