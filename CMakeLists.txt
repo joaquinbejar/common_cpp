@@ -13,8 +13,6 @@ include(cmake/nlohmann_json.cmake)
 #include(cmake/boost.cmake)
 include(cmake/simple_color.cmake)
 
-message(STATUS "SIMPLE_COLOR_INCLUDE ${SIMPLE_COLOR_INCLUDE}")
-
 add_library(common STATIC
         src/common.cpp include/common/common.h
         src/ip.cpp include/common/ip.h
@@ -26,6 +24,10 @@ target_include_directories(common
         ${NLOHMANN_JSON_INCLUDE}
 #        ${BOOST_ASIO_INCLUDE}
         ${SIMPLE_COLOR_INCLUDE}
+)
+target_link_libraries(common
+        PRIVATE
+        simple_color
 )
 
 install(TARGETS common DESTINATION lib)
