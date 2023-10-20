@@ -7,7 +7,7 @@
 
 #include "nlohmann/json.hpp"
 #include <set>
-#include <simple_color/color.h>
+#include "simple_color/color.h"
 #include <iostream>
 #include <sstream>
 #include <random>
