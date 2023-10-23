@@ -14,7 +14,7 @@ namespace common {
     std::string TimerSimple::Get() {
         std::time(&m_end);
         set_precision_t(std::difftime(m_end, m_begin), 2);
-        return simple_color::give_color("byellow", set_precision_t(std::difftime(m_end, m_begin), 2));
+        return simple_color::give_color(simple_color::Colors::YELLOW, set_precision_t(std::difftime(m_end, m_begin), 2));
     }
 
     std::string TimerSimple::GetNC() {
@@ -30,7 +30,7 @@ namespace common {
         std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
         auto seconds = std::chrono::duration_cast<std::chrono::seconds>(end - begin).count();
 
-        std::cout << simple_color::sBCyan << m_string << ": " << simple_color::sWhite << seconds << "[s]"
+        std::cout << simple_color::LightCyan1 << m_string << ": " << simple_color::White << seconds << "[s]"
                   << simple_color::Normal << std::endl;
     }
 
