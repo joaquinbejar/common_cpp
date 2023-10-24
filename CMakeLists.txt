@@ -10,7 +10,6 @@ message(STATUS "CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}")
 
 include(FetchContent)
 include(cmake/nlohmann_json.cmake)
-#include(cmake/boost.cmake)
 include(cmake/simple_color.cmake)
 
 add_library(common STATIC

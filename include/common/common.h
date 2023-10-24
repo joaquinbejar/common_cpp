@@ -11,6 +11,9 @@
 #include <iostream>
 #include <sstream>
 #include <random>
+#include <mutex>
+#include <queue>
+#include <thread>
 
 using json = nlohmann::json;
 
@@ -48,13 +51,13 @@ namespace common {
     }
 
     template<typename T>
-    std::set<T> vector_to_set(const std::vector<T>& v) {
+    std::set<T> vector_to_set(const std::vector<T> &v) {
         return {v.begin(), v.end()};
     }
 
 
     template<typename T>
-    std::set<T> join_sets(const std::set<T>& v1, const std::set<T>& v2) {
+    std::set<T> join_sets(const std::set<T> &v1, const std::set<T> &v2) {
         std::set<T> output;
         std::set_union(v1.begin(), v1.end(),
                        v2.begin(), v2.end(),
@@ -73,7 +76,7 @@ namespace common {
     template<typename T>
     std::string set_to_json(std::set<T> s) {
         std::string output = "[";
-        for (const T &item : s) {
+        for (const T &item: s) {
             output.append(to_string_for_json(item));
             output.append(",");
         }
@@ -101,6 +104,52 @@ namespace common {
     unsigned long long get_env_variable_long(std::string const &key, int const &default_value);
 
     bool get_env_variable_bool(std::string const &key, bool const &default_value);
+
+
+    template<typename T>
+    class ThreadQueue {
+    public:
+
+        ThreadQueue(size_t timeout = 10) : m_timeout(timeout) {}
+
+        bool enqueue(T t) {
+            try {
+                std::lock_guard<std::mutex> lock(m_mutex);
+                m_queue.push(t);
+                return true;
+            } catch (std::exception &e) {
+                return false;
+            }
+        }
+
+        bool dequeue_blocking(T &t) {
+            while (m_queue.empty()) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(m_timeout));
+            }
+            std::lock_guard<std::mutex> lock(m_mutex);
+            if (m_queue.empty()) {  // double-check
+                return false;
+            }
+            t = m_queue.front();
+            m_queue.pop();
+            return true;
+        }
+
+        bool dequeue(T &t) {
+            if (m_queue.empty()) {
+                return false;
+            }
+            std::lock_guard<std::mutex> lock(m_mutex);
+            t = m_queue.front();
+            m_queue.pop();
+            return true;
+        }
+
+    private:
+        std::queue<T> m_queue;
+        std::mutex m_mutex;
+        size_t m_timeout;
+    };
 
 }
 

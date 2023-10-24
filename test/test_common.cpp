@@ -391,4 +391,47 @@ TEST_CASE("vector_to_set function tests", "[vector_to_set]") {
 
 }
 
+TEST_CASE("Testing ThreadQueue functionality", "[queue]") {
+    common::ThreadQueue<int> intQueue;
+    common::ThreadQueue<std::string> stringQueue;
+
+    SECTION("Testing enqueue method") {
+        REQUIRE(intQueue.enqueue(42) == true);
+        REQUIRE(stringQueue.enqueue("hello") == true);
+    }
+
+    SECTION("Testing dequeue method") {
+        int intItem;
+        std::string stringItem;
+
+        REQUIRE(intQueue.enqueue(42) == true);
+        REQUIRE(intQueue.dequeue(intItem) == true);
+        REQUIRE(intItem == 42);
+
+        REQUIRE(stringQueue.enqueue("hello") == true);
+        REQUIRE(stringQueue.dequeue(stringItem) == true);
+        REQUIRE(stringItem == "hello");
+
+        REQUIRE(intQueue.dequeue(intItem) == false);  // Queue is empty
+        REQUIRE(stringQueue.dequeue(stringItem) == false);  // Queue is empty
+    }
+
+    SECTION("Testing dequeue_blocking method") {
+        int intItem;
+        std::string stringItem;
+
+        std::thread producer1([&intQueue]() { intQueue.enqueue(42); });
+        std::thread consumer1([&intQueue, &intItem]() { REQUIRE(intQueue.dequeue_blocking(intItem) == true); });
+        producer1.join();
+        consumer1.join();
+        REQUIRE(intItem == 42);
+
+        std::thread producer2([&stringQueue]() { stringQueue.enqueue("hello"); });
+        std::thread consumer2([&stringQueue, &stringItem]() { REQUIRE(stringQueue.dequeue_blocking(stringItem) == true); });
+        producer2.join();
+        consumer2.join();
+        REQUIRE(stringItem == "hello");
+    }
+}
+
 
