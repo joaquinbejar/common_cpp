@@ -123,7 +123,8 @@ namespace common {
         }
 
         bool dequeue_blocking(T &t) {
-            while (m_queue.empty()) {
+            size_t max_tries = 10;
+            while (m_queue.empty() && max_tries-- > 0) {
                 std::this_thread::sleep_for(std::chrono::milliseconds(m_timeout));
             }
             std::lock_guard<std::mutex> lock(m_mutex);
