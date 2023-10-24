@@ -145,6 +145,11 @@ namespace common {
             return true;
         }
 
+        size_t size() {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            return m_queue.size();
+        }
+
     private:
         std::queue<T> m_queue;
         std::mutex m_mutex;
