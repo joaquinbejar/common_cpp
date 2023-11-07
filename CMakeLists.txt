@@ -6,7 +6,9 @@ project(common)
 
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 set(COMMON_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
-message(STATUS "CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}")
+if (CMAKE_DEBUG)
+    message(STATUS "common CMAKE_CURRENT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}")
+endif ()
 
 include(FetchContent)
 include(cmake/nlohmann_json.cmake)
@@ -31,7 +33,7 @@ target_link_libraries(common
 install(TARGETS common DESTINATION lib)
 install(DIRECTORY include/ DESTINATION include)
 
-option(NO_COMMON_TESTS "Disable Current tests" OFF)
+option(NO_COMMON_TESTS "common Disable Current tests" OFF)
 
 if (NOT NO_COMMON_TESTS)
 
