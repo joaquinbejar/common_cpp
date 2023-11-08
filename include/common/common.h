@@ -110,7 +110,7 @@ namespace common {
     class ThreadQueue {
     public:
 
-        ThreadQueue(size_t timeout = 10) : m_timeout(timeout) {}
+        explicit ThreadQueue(size_t timeout = 10) : m_timeout(timeout) {}
 
         bool enqueue(T t) {
             try {
@@ -149,6 +149,12 @@ namespace common {
         size_t size() {
             std::lock_guard<std::mutex> lock(m_mutex);
             return m_queue.size();
+        }
+
+        // Method to safely wipe out all elements in the queue
+        [[maybe_unused]] void wipeout() {
+            std::lock_guard<std::mutex> lock(m_mutex); // Lock the mutex to ensure thread safety
+            m_queue = std::queue<T>(); // Create an empty queue
         }
 
     private:

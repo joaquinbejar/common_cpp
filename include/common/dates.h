@@ -7,7 +7,7 @@
 #include <iostream>
 
 namespace common::dates {
-
+    time_t get_unix_timestamp(const int &seconds);
 
 
 }
