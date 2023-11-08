@@ -7,9 +7,7 @@
 #include <iostream>
 
 namespace common::dates {
-    time_t get_unix_timestamp(const int &seconds);
-
-
+    time_t get_unix_timestamp(const int &seconds = 0);
 }
 
 #endif //COMMON_DATES_H
