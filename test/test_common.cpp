@@ -1,0 +1,437 @@
+//
+// Created by Joaquin Bejar Garcia on 19/10/23.
+//
+
+#include <common/common.h>
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_floating_point.hpp>
+
+// ---------------------------------------------------------------------------------------------------
+TEST_CASE("Declare config", "[Common]") {
+
+    REQUIRE(true);
+}
+
+
+TEST_CASE("to_upper works correctly", "[to_upper]") {
+    using common::to_upper;
+
+    SECTION("Mixed case") {
+        REQUIRE(to_upper("HeLLo") == "HELLO");
+    }
+
+    SECTION("All lower") {
+        REQUIRE(to_upper("world") == "WORLD");
+    }
+
+    SECTION("All upper") {
+        REQUIRE(to_upper("WORLD") == "WORLD");
+    }
+
+    SECTION("Empty string") {
+        REQUIRE(to_upper("").empty());
+    }
+}
+
+TEST_CASE("to_lower works correctly", "[to_lower]") {
+    using common::to_lower;
+
+    SECTION("Mixed case") {
+        REQUIRE(to_lower("HeLLo") == "hello");
+    }
+
+    SECTION("All lower") {
+        REQUIRE(to_lower("world") == "world");
+    }
+
+    SECTION("All upper") {
+        REQUIRE(to_lower("WORLD") == "world");
+    }
+
+    SECTION("Empty string") {
+        REQUIRE(to_lower("").empty());
+    }
+}
+
+TEST_CASE("to_hash works correctly", "[to_hash]") {
+    using common::to_hash;
+
+    SECTION("Non-empty strings") {
+        REQUIRE(to_hash("hello") != to_hash("world"));
+        REQUIRE(to_hash("hello") == to_hash("hello"));
+    }
+
+    SECTION("Empty string") {
+        REQUIRE(to_hash("") == std::to_string(std::hash<std::string>{}("")));
+    }
+}
+
+
+
+
+TEST_CASE("get_env_variable_set_string works correctly", "[get_env_variable_set_string]") {
+    using common::get_env_variable_set_string;
+
+    SECTION("Environment variable exists") {
+        setenv("MY_TEST_ENV", "value1,value2 value3,value4", 1);
+        auto result = get_env_variable_set_string("MY_TEST_ENV", "default_value");
+        REQUIRE(result.size() == 4);
+        REQUIRE(result.find("value1") != result.end());
+        REQUIRE(result.find("value2") != result.end());
+        REQUIRE(result.find("value3") != result.end());
+        REQUIRE(result.find("value4") != result.end());
+    }
+
+    SECTION("Environment variable does not exist") {
+        unsetenv("MY_TEST_ENV");
+        auto result = get_env_variable_set_string("MY_TEST_ENV", "default_value");
+        REQUIRE(result.size() == 1);
+        REQUIRE(result.find("default_value") != result.end());
+    }
+
+    SECTION("Environment variable is empty") {
+        setenv("MY_TEST_ENV", "", 1);
+        auto result = get_env_variable_set_string("MY_TEST_ENV", "default_value");
+        REQUIRE(result.empty());
+    }
+
+    SECTION("Default value is used") {
+        unsetenv("MY_TEST_ENV");
+        auto result = get_env_variable_set_string("MY_TEST_ENV", "default1,default2");
+        REQUIRE(result.size() == 2);
+        REQUIRE(result.find("default1") != result.end());
+        REQUIRE(result.find("default2") != result.end());
+    }
+}
+
+
+
+TEST_CASE("get_env_variable_int works correctly", "[get_env_variable_int]") {
+    using common::get_env_variable_int;
+
+    SECTION("Environment variable exists and is a valid integer") {
+        setenv("MY_INT_ENV", "42", 1);
+        int result = get_env_variable_int("MY_INT_ENV", 0);
+        REQUIRE(result == 42);
+    }
+
+    SECTION("Environment variable exists but is not an integer") {
+        setenv("MY_INT_ENV", "not_an_int", 1);
+        int result = get_env_variable_int("MY_INT_ENV", 0);
+        REQUIRE(result == 0);
+    }
+
+    SECTION("Environment variable does not exist") {
+        unsetenv("MY_INT_ENV");
+        int result = get_env_variable_int("MY_INT_ENV", 0);
+        REQUIRE(result == 0);
+    }
+
+    SECTION("Environment variable is empty") {
+        setenv("MY_INT_ENV", "", 1);
+        int result = get_env_variable_int("MY_INT_ENV", 0);
+        REQUIRE(result == 0);
+    }
+
+    SECTION("Default value is used") {
+        unsetenv("MY_INT_ENV");
+        int result = get_env_variable_int("MY_INT_ENV", 99);
+        REQUIRE(result == 99);
+    }
+}
+
+
+TEST_CASE("get_env_variable_bool works correctly", "[get_env_variable_bool]") {
+    using common::get_env_variable_bool;
+
+    SECTION("Environment variable exists and is 'true'") {
+        setenv("MY_BOOL_ENV", "true", 1);
+        bool result = get_env_variable_bool("MY_BOOL_ENV", false);
+        REQUIRE(result == true);
+    }
+
+    SECTION("Environment variable exists and is 'false'") {
+        setenv("MY_BOOL_ENV", "false", 1);
+        bool result = get_env_variable_bool("MY_BOOL_ENV", true);
+        REQUIRE(result == false);
+    }
+
+    SECTION("Environment variable exists but is neither 'true' nor 'false'") {
+        setenv("MY_BOOL_ENV", "neither", 1);
+        bool result = get_env_variable_bool("MY_BOOL_ENV", true);
+        REQUIRE(result == true);
+    }
+
+    SECTION("Environment variable does not exist") {
+        unsetenv("MY_BOOL_ENV");
+        bool result = get_env_variable_bool("MY_BOOL_ENV", true);
+        REQUIRE(result == true);
+    }
+
+    SECTION("Environment variable is empty") {
+        setenv("MY_BOOL_ENV", "", 1);
+        bool result = get_env_variable_bool("MY_BOOL_ENV", true);
+        REQUIRE(result == true);
+    }
+
+    SECTION("Default value is used") {
+        unsetenv("MY_BOOL_ENV");
+        bool result = get_env_variable_bool("MY_BOOL_ENV", false);
+        REQUIRE(result == false);
+    }
+}
+
+
+TEST_CASE("get_env_variable_long works correctly", "[get_env_variable_long]") {
+    using common::get_env_variable_long;
+
+    SECTION("Environment variable exists and is a valid unsigned long long") {
+        setenv("MY_LONG_ENV", "18446744073709551615", 1); // Max value for unsigned long long
+        auto result = get_env_variable_long("MY_LONG_ENV", 0);
+        REQUIRE(result == 18446744073709551615ULL);
+    }
+
+    SECTION("Environment variable exists but is not an unsigned long long") {
+        setenv("MY_LONG_ENV", "not_a_long", 1);
+        auto result = get_env_variable_long("MY_LONG_ENV", 0);
+        REQUIRE(result == 0);
+    }
+
+    SECTION("Environment variable does not exist") {
+        unsetenv("MY_LONG_ENV");
+        auto result = get_env_variable_long("MY_LONG_ENV", 0);
+        REQUIRE(result == 0);
+    }
+
+    SECTION("Environment variable is empty") {
+        setenv("MY_LONG_ENV", "", 1);
+        auto result = get_env_variable_long("MY_LONG_ENV", 0);
+        REQUIRE(result == 0);
+    }
+
+    SECTION("Default value is used") {
+        unsetenv("MY_LONG_ENV");
+        auto result = get_env_variable_long("MY_LONG_ENV", 99);
+        REQUIRE(result == 99);
+    }
+}
+
+
+
+TEST_CASE("get_env_variable_string works correctly", "[get_env_variable_string]") {
+    using common::get_env_variable_string;
+
+    SECTION("Environment variable exists") {
+        setenv("MY_STRING_ENV", "my_value", 1);
+        auto result = get_env_variable_string("MY_STRING_ENV", "default_value");
+        REQUIRE(result == "my_value");
+    }
+
+    SECTION("Environment variable does not exist") {
+        unsetenv("MY_STRING_ENV");
+        auto result = get_env_variable_string("MY_STRING_ENV", "default_value");
+        REQUIRE(result == "default_value");
+    }
+
+    SECTION("Environment variable is empty") {
+        setenv("MY_STRING_ENV", "", 1);
+        auto result = get_env_variable_string("MY_STRING_ENV", "default_value");
+        REQUIRE(result.empty());
+    }
+
+    SECTION("Default value is used") {
+        unsetenv("MY_STRING_ENV");
+        auto result = get_env_variable_string("MY_STRING_ENV", "default_value");
+        REQUIRE(result == "default_value");
+    }
+}
+
+
+TEST_CASE("key_generator works correctly", "[key_generator]") {
+    using common::key_generator;
+
+    SECTION("Generated key length is correct") {
+        auto generated_key = key_generator();
+        REQUIRE(generated_key.length() == 23);  // 20 characters + 3 underscores
+    }
+
+    SECTION("Generated key contains underscores at correct positions") {
+        auto generated_key = key_generator();
+        REQUIRE(generated_key[5] == '_');
+        REQUIRE(generated_key[11] == '_');
+        REQUIRE(generated_key[17] == '_');
+    }
+
+    SECTION("Generated keys are unique") {
+        auto generated_key1 = key_generator();
+        auto generated_key2 = key_generator();
+        REQUIRE(generated_key1 != generated_key2);
+    }
+
+    SECTION("Generated keys contain only lowercase alphabets and underscores") {
+        auto generated_key = key_generator();
+        for (char c : generated_key) {
+            REQUIRE(((c >= 'a' && c <= 'z') || c == '_'));
+        }
+    }
+}
+
+
+TEST_CASE("setTojson works correctly", "[setTojson]") {
+    using common::set_to_json;
+
+    SECTION("Empty set") {
+        std::set<std::string> s;
+        auto json = set_to_json(s);
+        REQUIRE(json == "[]");
+    }
+
+    SECTION("Single item set") {
+        std::set<std::string> s = {"item1"};
+        auto json = set_to_json(s);
+        REQUIRE(json == "[\"item1\"]");
+    }
+
+    SECTION("Multiple items set") {
+        std::set<std::string> s = {"item1", "item2", "item3"};
+        auto json = set_to_json(s);
+        REQUIRE(json == "[\"item1\",\"item2\",\"item3\"]");
+    }
+
+    SECTION("Set with numeric items") {
+        std::set<int> s = {1, 2, 3};
+        auto json = set_to_json(s);
+        REQUIRE(json == "[1,2,3]");
+    }
+
+    SECTION("Set with long items") {
+        std::set<long> s = {1, 2, 3};
+        auto json = set_to_json(s);
+        REQUIRE(json == "[1,2,3]");
+    }
+
+    SECTION("Set with long items") {
+        std::set<float> s = {1.1, 2, 3.1};
+        auto json = set_to_json(s);
+        REQUIRE(json == "[1.100000,2.000000,3.100000]");
+    }
+}
+
+TEST_CASE("to_string_for_json function tests", "[to_string_for_json]") {
+    using common::to_string_for_json;
+
+    SECTION("Converts integers to string") {
+        int val = 42;
+        REQUIRE(to_string_for_json(val) == "42");
+    }
+
+    SECTION("Converts floats to string") {
+        float val = 42.42;
+        REQUIRE_THAT(std::stof(to_string_for_json(val)), Catch::Matchers::WithinAbs(42.42, 0.002));
+    }
+
+    SECTION("Converts doubles to string") {
+        double val = 42.42;
+        REQUIRE_THAT(std::stof(to_string_for_json(val)), Catch::Matchers::WithinAbs(42.42, 0.0001));
+    }
+}
+
+TEST_CASE("join_sets function tests", "[join_sets]") {
+    using common::join_sets;
+
+    SECTION("Join sets of integers") {
+        std::set<int> set1 = {1, 2, 3};
+        std::set<int> set2 = {3, 4, 5};
+        std::set<int> result = join_sets(set1, set2);
+        std::set<int> expected = {1, 2, 3, 4, 5};
+        REQUIRE(result == expected);
+    }
+
+    SECTION("Join sets of strings") {
+        std::set<std::string> set1 = {"a", "b", "c"};
+        std::set<std::string> set2 = {"c", "d", "e"};
+        std::set<std::string> result = join_sets(set1, set2);
+        std::set<std::string> expected = {"a", "b", "c", "d", "e"};
+        REQUIRE(result == expected);
+    }
+
+    SECTION("Join empty sets") {
+        std::set<int> set1 = {};
+        std::set<int> set2 = {};
+        std::set<int> result = join_sets(set1, set2);
+        std::set<int> expected = {};
+        REQUIRE(result == expected);
+    }
+
+}
+
+TEST_CASE("vector_to_set function tests", "[vector_to_set]") {
+    using common::vector_to_set;
+
+    SECTION("Convert vector of integers to set") {
+        std::vector<int> vec = {1, 2, 3, 3, 4, 4, 5};
+        std::set<int> result = vector_to_set(vec);
+        std::set<int> expected = {1, 2, 3, 4, 5};
+        REQUIRE(result == expected);
+    }
+
+    SECTION("Convert vector of strings to set") {
+        std::vector<std::string> vec = {"a", "b", "c", "c", "d"};
+        std::set<std::string> result = vector_to_set(vec);
+        std::set<std::string> expected = {"a", "b", "c", "d"};
+        REQUIRE(result == expected);
+    }
+
+    SECTION("Convert empty vector to empty set") {
+        std::vector<int> vec = {};
+        std::set<int> result = vector_to_set(vec);
+        std::set<int> expected = {};
+        REQUIRE(result == expected);
+    }
+
+}
+
+TEST_CASE("Testing ThreadQueue functionality", "[queue]") {
+    common::ThreadQueue<int> intQueue;
+    common::ThreadQueue<std::string> stringQueue;
+
+    SECTION("Testing enqueue method") {
+        REQUIRE(intQueue.enqueue(42) == true);
+        REQUIRE(stringQueue.enqueue("hello") == true);
+    }
+
+    SECTION("Testing dequeue method") {
+        int intItem;
+        std::string stringItem;
+
+        REQUIRE(intQueue.enqueue(42) == true);
+        REQUIRE(intQueue.dequeue(intItem) == true);
+        REQUIRE(intItem == 42);
+
+        REQUIRE(stringQueue.enqueue("hello") == true);
+        REQUIRE(stringQueue.dequeue(stringItem) == true);
+        REQUIRE(stringItem == "hello");
+
+        REQUIRE(intQueue.dequeue(intItem) == false);  // Queue is empty
+        REQUIRE(stringQueue.dequeue(stringItem) == false);  // Queue is empty
+    }
+
+    SECTION("Testing dequeue_blocking method") {
+        int intItem;
+        std::string stringItem;
+
+        std::thread producer1([&intQueue]() { intQueue.enqueue(42); });
+        std::thread consumer1([&intQueue, &intItem]() { REQUIRE(intQueue.dequeue_blocking(intItem) == true); });
+        producer1.join();
+        consumer1.join();
+        REQUIRE(intItem == 42);
+
+        std::thread producer2([&stringQueue]() { stringQueue.enqueue("hello"); });
+        std::thread consumer2([&stringQueue, &stringItem]() { REQUIRE(stringQueue.dequeue_blocking(stringItem) == true); });
+        producer2.join();
+        consumer2.join();
+        REQUIRE(stringItem == "hello");
+    }
+}
+
+
