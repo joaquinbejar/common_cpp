@@ -25,3 +25,14 @@ target_link_libraries(test_ip PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(test_ip PRIVATE
         common
 )
+
+add_executable(test_sql_utils test_sql_utils.cpp)
+target_include_directories(test_sql_utils
+        PRIVATE
+        ${COMMON_INCLUDE}
+)
+
+target_link_libraries(test_sql_utils PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(test_sql_utils PRIVATE
+        common
+)
