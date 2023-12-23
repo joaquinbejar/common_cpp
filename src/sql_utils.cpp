@@ -19,4 +19,14 @@ namespace common::sql_utils {
 
         return modifiedQuery;
     }
+
+    std::string remove_quotes(const std::string &input) {
+        std::string result;
+        for (char c: input) {
+            if (c != '\'' && c != '"' && c != '`') {
+                result += c;
+            }
+        }
+        return result;
+    }
 }

@@ -8,5 +8,7 @@
 
 namespace common::sql_utils {
     std::string empty_to_null(const std::string& query) ;
+
+    std::string remove_quotes(const std::string &input);
 }
 #endif //COMMON_SQL_UTILS_H
