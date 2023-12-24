@@ -14,7 +14,8 @@ namespace common {
     std::string TimerSimple::Get() {
         std::time(&m_end);
         set_precision_t(std::difftime(m_end, m_begin), 2);
-        return simple_color::give_color(simple_color::Colors::YELLOW, set_precision_t(std::difftime(m_end, m_begin), 2));
+        return simple_color::give_color(simple_color::Colors::YELLOW,
+                                        set_precision_t(std::difftime(m_end, m_begin), 2));
     }
 
     std::string TimerSimple::GetNC() {
