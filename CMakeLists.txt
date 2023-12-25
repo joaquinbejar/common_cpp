@@ -19,6 +19,7 @@ add_library(common STATIC
         src/ip.cpp include/common/ip.h
         src/dates.cpp include/common/dates.h
         src/sql_utils.cpp include/common/sql_utils.h
+        src/dates.cpp include/common/dates.h
 )
 target_include_directories(common
         PRIVATE
