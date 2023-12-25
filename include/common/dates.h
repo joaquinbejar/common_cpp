@@ -4,6 +4,7 @@
 
 #ifndef COMMON_DATES_H
 #define COMMON_DATES_H
+
 #include <iostream>
 #include <chrono>
 #include <iomanip>
@@ -16,32 +17,33 @@ namespace common::dates {
 
     std::string get_current_date();
 
-    bool isWeekend(const std::chrono::system_clock::time_point& date);
+    bool isWeekend(const std::chrono::system_clock::time_point &date);
 
-    std::string formatDate(const std::chrono::system_clock::time_point& date);
+    std::string formatDate(const std::chrono::system_clock::time_point &date);
 
     class DateIterator {
     public:
         using iterator_category = std::forward_iterator_tag;
         using difference_type = std::ptrdiff_t;
         using Date = std::string;
-        using pointer = const Date*;
-        using reference = const Date&;
+        using pointer = const Date *;
+        using reference = const Date &;
 
-        explicit DateIterator(int daysAgo);
+        explicit DateIterator(size_t daysAgo);
+
         DateIterator() = delete;
 
         Date operator*();
 
-        DateIterator& operator++();
+        DateIterator &operator++();
 
         DateIterator operator++(int);
 
-        friend bool operator==(const DateIterator& a, const DateIterator& b) {
+        friend bool operator==(const DateIterator &a, const DateIterator &b) {
             return a.date_ == b.date_;
         }
 
-        friend bool operator!=(const DateIterator& a, const DateIterator& b) {
+        friend bool operator!=(const DateIterator &a, const DateIterator &b) {
             return a.date_ > b.endDate_;
         }
 
@@ -52,11 +54,11 @@ namespace common::dates {
 
     class DateRange {
     public:
-        explicit DateRange(int years);
+        explicit DateRange(size_t years);
 
         DateIterator begin();
 
-        [[nodiscard]] DateIterator end() ;
+        [[nodiscard]] DateIterator end();
 
     private:
         int years_;

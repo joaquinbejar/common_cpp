@@ -47,7 +47,7 @@ namespace common::dates {
         return ss.str();
     }
 
-    DateIterator::DateIterator(int daysToEnd)
+    DateIterator::DateIterator(size_t daysToEnd)
             : date_(std::chrono::system_clock::now()),
               endDate_(date_ - std::chrono::days(daysToEnd)) {}
 
@@ -69,13 +69,13 @@ namespace common::dates {
     }
 
 
-    DateRange::DateRange(int years) : years_(years) {}
+    DateRange::DateRange(size_t years) : years_(years) {}
 
     DateIterator DateRange::begin() {
         return DateIterator(0);
     }
 
-    DateIterator DateRange::end()  {
+    DateIterator DateRange::end() {
         return DateIterator(years_ * 365); // Simplification, does not account for leap years
     }
 
