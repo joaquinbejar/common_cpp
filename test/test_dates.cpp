@@ -68,3 +68,19 @@ TEST_CASE("DateRange Tests", "[DateRange]") {
         REQUIRE(dayCount < expectedDays);
     }
 }
+
+TEST_CASE("Current and yesterday date", "[DateRange]") {
+    SECTION("Current date") {
+        std::string current_date = common::dates::get_current_date();
+        std::regex dateFormat(R"(\d{4}-\d{2}-\d{2})");
+        REQUIRE(std::regex_match(current_date, dateFormat));
+        REQUIRE(current_date == "2023-12-28");
+    }
+
+    SECTION("Yesterday date") {
+        std::string yesterday_date = common::dates::get_yesterday_date();
+        std::regex dateFormat(R"(\d{4}-\d{2}-\d{2})");
+        REQUIRE(std::regex_match(yesterday_date, dateFormat));
+        REQUIRE(yesterday_date == "2023-12-27");
+    }
+}

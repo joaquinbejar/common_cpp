@@ -33,6 +33,20 @@ namespace common::dates {
         return ss.str();
     }
 
+    std::string get_yesterday_date() {
+    auto now = std::chrono::system_clock::now();
+    // Resta un día (24 horas)
+    auto yesterday = now - std::chrono::hours(24);
+    std::time_t yesterday_time = std::chrono::system_clock::to_time_t(yesterday);
+
+    std::tm yesterday_tm = *std::localtime(&yesterday_time);
+
+    std::stringstream ss;
+    ss << std::put_time(&yesterday_tm, "%Y-%m-%d");
+
+    return ss.str();
+}
+
     bool isWeekend(const std::chrono::system_clock::time_point &date) {
         auto timeT = std::chrono::system_clock::to_time_t(date);
         auto localTime = *std::localtime(&timeT);

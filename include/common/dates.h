@@ -17,6 +17,8 @@ namespace common::dates {
 
     std::string get_current_date();
 
+    std::string get_yesterday_date();
+
     bool isWeekend(const std::chrono::system_clock::time_point &date);
 
     std::string formatDate(const std::chrono::system_clock::time_point &date);
