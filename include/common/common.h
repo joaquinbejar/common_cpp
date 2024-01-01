@@ -175,8 +175,8 @@ namespace common {
     template<typename T>
     class ThreadQueueWithMaxSize {
     public:
-        size_t empty_counter = 0;
-        size_t full_counter = 0;
+        std::atomic<size_t> empty_counter = 0;
+        std::atomic<size_t> full_counter = 0;
 
         explicit ThreadQueueWithMaxSize(size_t max_size, size_t timeout = 10)
                 : m_max_size(max_size), m_timeout(timeout) {}
