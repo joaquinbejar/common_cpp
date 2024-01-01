@@ -14,6 +14,8 @@
 #include <mutex>
 #include <queue>
 #include <thread>
+#include <condition_variable>
+#include <chrono>
 
 using json = nlohmann::json;
 
@@ -168,6 +170,76 @@ namespace common {
         std::mutex m_mutex;
         size_t m_timeout;
     };
+
+
+    template<typename T>
+    class ThreadQueueWithMaxSize {
+    public:
+        explicit ThreadQueueWithMaxSize(size_t max_size, size_t timeout = 10)
+                : m_max_size(max_size), m_timeout(timeout) {}
+
+        bool enqueue(T t) {
+            while (this->full()) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(m_timeout));
+            }
+            std::unique_lock<std::mutex> lock(m_mutex);
+            m_queue.push(std::move(t));
+            lock.unlock();
+            m_cv.notify_one(); // Notify one waiting thread, if any
+            return true;
+        }
+
+        bool dequeue_blocking(T &t) {
+            while (this->empty()) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(m_timeout));
+            }
+            std::unique_lock<std::mutex> lock(m_mutex);
+            t = std::move(m_queue.front());
+            m_queue.pop();
+            lock.unlock();
+            m_cv.notify_one(); // Notify one waiting thread, if any
+            return true;
+        }
+
+        bool dequeue(T &t) {
+            if (this->empty()) {
+                return false;
+            }
+            std::lock_guard<std::mutex> lock(m_mutex);
+            t = std::move(m_queue.front());
+            m_queue.pop();
+            m_cv.notify_one(); // Notify one waiting thread, if any
+            return true;
+        }
+
+        bool empty() {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            return m_queue.empty();
+        }
+
+        bool full() {
+            return this->size() >= m_max_size;
+        }
+
+        size_t size() {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            return m_queue.size();
+        }
+
+        void wipeout() {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            m_queue = std::queue<T>();
+            m_cv.notify_all(); // Notify all waiting threads
+        }
+
+    private:
+        std::queue<T> m_queue;
+        std::mutex m_mutex;
+        std::condition_variable m_cv;
+        size_t m_max_size;
+        size_t m_timeout;
+    };
+
 
 }
 
