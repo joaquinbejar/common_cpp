@@ -435,3 +435,76 @@ TEST_CASE("Testing ThreadQueue functionality", "[queue]") {
 }
 
 
+TEST_CASE("Testing ThreadQueueWithMaxSize functionality", "[queue]") {
+    common::ThreadQueueWithMaxSize<int> intQueue(100);
+    common::ThreadQueueWithMaxSize<std::string> stringQueue(100);
+
+    SECTION("Testing enqueue method") {
+        REQUIRE(intQueue.enqueue(42) == true);
+        REQUIRE(stringQueue.enqueue("hello") == true);
+    }
+
+    SECTION("Testing dequeue method") {
+        int intItem;
+        std::string stringItem;
+
+        REQUIRE(intQueue.enqueue(42) == true);
+        REQUIRE(intQueue.dequeue(intItem) == true);
+        REQUIRE(intItem == 42);
+
+        REQUIRE(stringQueue.enqueue("hello") == true);
+        REQUIRE(stringQueue.dequeue(stringItem) == true);
+        REQUIRE(stringItem == "hello");
+
+        REQUIRE(intQueue.dequeue(intItem) == false);  // Queue is empty
+        REQUIRE(stringQueue.dequeue(stringItem) == false);  // Queue is empty
+    }
+
+    SECTION("Testing dequeue_blocking method") {
+        int intItem;
+        std::string stringItem;
+
+        std::thread producer1([&intQueue]() { intQueue.enqueue(42); });
+        std::thread consumer1([&intQueue, &intItem]() { REQUIRE(intQueue.dequeue_blocking(intItem) == true); });
+        producer1.join();
+        consumer1.join();
+        REQUIRE(intItem == 42);
+
+        std::thread producer2([&stringQueue]() { stringQueue.enqueue("hello"); });
+        std::thread consumer2([&stringQueue, &stringItem]() { REQUIRE(stringQueue.dequeue_blocking(stringItem) == true); });
+        producer2.join();
+        consumer2.join();
+        REQUIRE(stringItem == "hello");
+    }
+
+    SECTION("Testing dequeue_blocking method with max size") {
+        int intItem;
+        std::string stringItem;
+
+        std::thread producer1([&intQueue]() {
+            for (int i = 0; i < 1000; i++) {
+                intQueue.enqueue(i);
+            }
+        });
+        std::thread consumer1([&intQueue, &intItem]() {
+            for (int i = 0; i < 1000; i++) {
+                REQUIRE(intQueue.dequeue_blocking(intItem) == true);
+            }
+        });
+        producer1.join();
+        consumer1.join();
+
+        std::thread producer2([&stringQueue]() {
+            for (int i = 0; i < 1000; i++) {
+                stringQueue.enqueue("hello_" + std::to_string(i));
+            }
+        });
+        std::thread consumer2([&stringQueue, &stringItem]() {
+            for (int i = 0; i < 1000; i++) {
+                REQUIRE(stringQueue.dequeue_blocking(stringItem) == true);
+            }
+        });
+        producer2.join();
+        consumer2.join();
+    }
+}
