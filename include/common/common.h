@@ -243,10 +243,7 @@ namespace common {
         std::condition_variable m_cv;
         size_t m_max_size;
         size_t m_timeout;
-        size_t
     };
-
-
 }
 
 #endif //COMMON_COMMON_H
