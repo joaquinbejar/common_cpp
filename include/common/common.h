@@ -205,6 +205,7 @@ namespace common {
         explicit ThreadQueueWithMaxSize(size_t max_size, size_t timeout = 10)
                 : m_max_size(max_size), m_timeout(timeout) {}
 
+
         bool enqueue(T t) {
             while (this->full()) {
                 stats.increment_full();
@@ -218,11 +219,15 @@ namespace common {
         }
 
         bool dequeue_blocking(T &t) {
-            while (this->empty()) {
+            size_t max_tries = 10;
+            while (this->empty() && max_tries-- > 0) {
                 stats.increment_empty();
                 std::this_thread::sleep_for(std::chrono::milliseconds(m_timeout));
             }
             std::unique_lock<std::mutex> lock(m_mutex);
+            if (m_queue.empty()) {  // double-check
+                return false;
+            }
             t = std::move(m_queue.front());
             m_queue.pop();
             lock.unlock();
