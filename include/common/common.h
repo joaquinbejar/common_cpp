@@ -107,6 +107,30 @@ namespace common {
 
     bool get_env_variable_bool(std::string const &key, bool const &default_value);
 
+    struct Stats {
+        size_t number_of_times_queue_was_empty;
+        size_t number_of_times_queue_was_full;
+        std::mutex stats_mutex;
+
+        Stats();
+
+        Stats(const Stats &other);
+
+        Stats(Stats &&other) = delete;
+
+        Stats &operator=(const Stats &other) = delete;
+
+        Stats &operator=(Stats &&other) = delete;
+
+        void increment_empty();
+
+        void increment_full();
+
+        size_t get_empty();
+
+        size_t get_full();
+
+    };
 
     template<typename T>
     class ThreadQueue {
@@ -175,15 +199,15 @@ namespace common {
     template<typename T>
     class ThreadQueueWithMaxSize {
     public:
-        std::atomic<size_t> empty_counter = 0;
-        std::atomic<size_t> full_counter = 0;
+
+        Stats stats;
 
         explicit ThreadQueueWithMaxSize(size_t max_size, size_t timeout = 10)
                 : m_max_size(max_size), m_timeout(timeout) {}
 
         bool enqueue(T t) {
             while (this->full()) {
-                full_counter++;
+                stats.increment_full();
                 std::this_thread::sleep_for(std::chrono::milliseconds(m_timeout));
             }
             std::unique_lock<std::mutex> lock(m_mutex);
@@ -195,7 +219,7 @@ namespace common {
 
         bool dequeue_blocking(T &t) {
             while (this->empty()) {
-                empty_counter++;
+                stats.increment_empty();
                 std::this_thread::sleep_for(std::chrono::milliseconds(m_timeout));
             }
             std::unique_lock<std::mutex> lock(m_mutex);
@@ -215,6 +239,10 @@ namespace common {
             m_queue.pop();
             m_cv.notify_one(); // Notify one waiting thread, if any
             return true;
+        }
+
+        Stats get_stats() {
+            return stats;
         }
 
         bool empty() {
