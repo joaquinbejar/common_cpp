@@ -112,33 +112,23 @@ namespace common {
         size_t number_of_times_queue_was_full;
         std::mutex stats_mutex;
 
-        Stats() : number_of_times_queue_was_empty(0), number_of_times_queue_was_full(0) {}
+        Stats();
 
-        void increment_empty() {
-            std::lock_guard<std::mutex> lock(stats_mutex);
-            ++number_of_times_queue_was_empty;
-        }
+        Stats(const Stats &other);
 
-        void increment_full() {
-            std::lock_guard<std::mutex> lock(stats_mutex);
-            ++number_of_times_queue_was_full;
-        }
+        Stats(Stats &&other) = delete;
 
-        size_t get_empty() {
-            std::lock_guard<std::mutex> lock(stats_mutex);
-            return number_of_times_queue_was_empty;
-        }
+        Stats &operator=(const Stats &other) = delete;
 
-        size_t get_full() {
-            std::lock_guard<std::mutex> lock(stats_mutex);
-            return number_of_times_queue_was_full;
-        }
+        Stats &operator=(Stats &&other) = delete;
 
-        Stats(const Stats &other) {
-            std::lock_guard<std::mutex> lock(stats_mutex);
-            number_of_times_queue_was_empty = other.number_of_times_queue_was_empty;
-            number_of_times_queue_was_full = other.number_of_times_queue_was_full;
-        }
+        void increment_empty();
+
+        void increment_full();
+
+        size_t get_empty();
+
+        size_t get_full();
 
     };
 

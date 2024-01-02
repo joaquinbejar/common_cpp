@@ -107,7 +107,6 @@ namespace common {
         return result;
     }
 
-
     int get_env_variable_int(std::string const &key, int const &default_value) {
         char *c_queue = getenv(key.c_str());
         if (c_queue != nullptr) {
@@ -145,9 +144,38 @@ namespace common {
         }
     }
 
-
     std::string to_string_for_json(const std::string &item) {
         return "\"" + item + "\"";
     }
+
+
+    Stats::Stats() : number_of_times_queue_was_empty(0), number_of_times_queue_was_full(0) {}
+
+    Stats::Stats(const Stats &other) {
+        std::lock_guard<std::mutex> lock(stats_mutex);
+        number_of_times_queue_was_empty = other.number_of_times_queue_was_empty;
+        number_of_times_queue_was_full = other.number_of_times_queue_was_full;
+    }
+
+    void Stats::increment_empty() {
+        std::lock_guard<std::mutex> lock(stats_mutex);
+        ++number_of_times_queue_was_empty;
+    }
+
+    void Stats::increment_full() {
+        std::lock_guard<std::mutex> lock(stats_mutex);
+        ++number_of_times_queue_was_full;
+    }
+
+    size_t Stats::get_empty() {
+        std::lock_guard<std::mutex> lock(stats_mutex);
+        return number_of_times_queue_was_empty;
+    }
+
+    size_t Stats::get_full() {
+        std::lock_guard<std::mutex> lock(stats_mutex);
+        return number_of_times_queue_was_full;
+    }
+
 
 }
