@@ -205,8 +205,13 @@ namespace common {
         explicit ThreadQueueWithMaxSize(size_t max_size, size_t timeout = 10)
                 : m_max_size(max_size), m_timeout(timeout) {}
 
+        ~ThreadQueueWithMaxSize() {
+            this->m_stop.store(true);
+            this->wipeout();
+        }
+
         bool enqueue(T t) {
-            while (this->full()) {
+            while (this->full() && !m_stop.load()) {
                 stats.increment_full();
                 std::this_thread::sleep_for(std::chrono::milliseconds(m_timeout));
             }
@@ -218,7 +223,7 @@ namespace common {
         }
 
         bool dequeue_blocking(T &t) {
-            while (this->empty()) {
+            while (this->empty() && !m_stop.load()) {
                 stats.increment_empty();
                 std::this_thread::sleep_for(std::chrono::milliseconds(m_timeout));
             }
@@ -271,6 +276,7 @@ namespace common {
         std::condition_variable m_cv;
         size_t m_max_size;
         size_t m_timeout;
+        std::atomic<bool> m_stop{false};
     };
 }
 
