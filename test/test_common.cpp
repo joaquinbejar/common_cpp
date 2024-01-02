@@ -67,8 +67,6 @@ TEST_CASE("to_hash works correctly", "[to_hash]") {
 }
 
 
-
-
 TEST_CASE("get_env_variable_set_string works correctly", "[get_env_variable_set_string]") {
     using common::get_env_variable_set_string;
 
@@ -103,7 +101,6 @@ TEST_CASE("get_env_variable_set_string works correctly", "[get_env_variable_set_
         REQUIRE(result.find("default2") != result.end());
     }
 }
-
 
 
 TEST_CASE("get_env_variable_int works correctly", "[get_env_variable_int]") {
@@ -217,7 +214,6 @@ TEST_CASE("get_env_variable_long works correctly", "[get_env_variable_long]") {
 }
 
 
-
 TEST_CASE("get_env_variable_string works correctly", "[get_env_variable_string]") {
     using common::get_env_variable_string;
 
@@ -270,7 +266,7 @@ TEST_CASE("key_generator works correctly", "[key_generator]") {
 
     SECTION("Generated keys contain only lowercase alphabets and underscores") {
         auto generated_key = key_generator();
-        for (char c : generated_key) {
+        for (char c: generated_key) {
             REQUIRE(((c >= 'a' && c <= 'z') || c == '_'));
         }
     }
@@ -427,7 +423,8 @@ TEST_CASE("Testing ThreadQueue functionality", "[queue]") {
         REQUIRE(intItem == 42);
 
         std::thread producer2([&stringQueue]() { stringQueue.enqueue("hello"); });
-        std::thread consumer2([&stringQueue, &stringItem]() { REQUIRE(stringQueue.dequeue_blocking(stringItem) == true); });
+        std::thread consumer2(
+                [&stringQueue, &stringItem]() { REQUIRE(stringQueue.dequeue_blocking(stringItem) == true); });
         producer2.join();
         consumer2.join();
         REQUIRE(stringItem == "hello");
@@ -471,15 +468,16 @@ TEST_CASE("Testing ThreadQueueWithMaxSize functionality", "[queue]") {
         REQUIRE(intItem == 42);
 
         std::thread producer2([&stringQueue]() { stringQueue.enqueue("hello"); });
-        std::thread consumer2([&stringQueue, &stringItem]() { REQUIRE(stringQueue.dequeue_blocking(stringItem) == true); });
+        std::thread consumer2(
+                [&stringQueue, &stringItem]() { REQUIRE(stringQueue.dequeue_blocking(stringItem) == true); });
         producer2.join();
         consumer2.join();
         REQUIRE(stringItem == "hello");
     }
 
-    SECTION("Testing dequeue_blocking method with max size") {
+    SECTION("Testing dequeue_blocking method with max size Int") {
         int intItem;
-        std::string stringItem;
+
 
         std::thread producer1([&intQueue]() {
             for (int i = 0; i < 1000; i++) {
@@ -494,6 +492,14 @@ TEST_CASE("Testing ThreadQueueWithMaxSize functionality", "[queue]") {
         producer1.join();
         consumer1.join();
 
+        common::Stats stats = intQueue.get_stats();
+        REQUIRE(stats.get_empty() > 0);
+        REQUIRE(stats.get_full() > 0);
+
+    }
+
+    SECTION("Testing dequeue_blocking method with max size String") {
+        std::string stringItem;
         std::thread producer2([&stringQueue]() {
             for (int i = 0; i < 1000; i++) {
                 stringQueue.enqueue("hello_" + std::to_string(i));
@@ -506,5 +512,9 @@ TEST_CASE("Testing ThreadQueueWithMaxSize functionality", "[queue]") {
         });
         producer2.join();
         consumer2.join();
+
+        common::Stats stats = stringQueue.get_stats();
+        REQUIRE(stats.get_empty() > 0);
+        REQUIRE(stats.get_full() > 0);
     }
 }
