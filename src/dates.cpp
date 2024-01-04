@@ -6,6 +6,23 @@
 
 namespace common::dates {
 
+    std::string epoch_to_date_string(long long epoch) {
+        if (epoch > 10000000000) {
+            epoch /= 1000;
+        }
+
+        std::chrono::time_point<std::chrono::system_clock> tp = std::chrono::system_clock::from_time_t(epoch);
+
+        std::time_t time = std::chrono::system_clock::to_time_t(tp);
+        std::tm *tm_ptr = std::localtime(&time);
+
+        std::ostringstream oss;
+        oss << std::put_time(tm_ptr, "%Y-%m-%d");
+
+        return oss.str();
+    }
+
+
     // Function to get the Unix timestamp, optionally adjusted by a number of seconds
     time_t get_unix_timestamp(const int &seconds) {
         // Get the current system time as a time point

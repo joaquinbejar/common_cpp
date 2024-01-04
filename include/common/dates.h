@@ -13,6 +13,9 @@
 #include <iterator>
 
 namespace common::dates {
+
+    std::string epoch_to_date_string(long long epoch);
+
     time_t get_unix_timestamp(const int &seconds = 0);
 
     std::string get_current_date();
