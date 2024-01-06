@@ -33,6 +33,21 @@ TEST_CASE("Inserting and finding elements in hash table", "[lock_free_hash_table
     }
 }
 
+TEST_CASE("Inserting and finding elements in hash table with scope", "[lock_free_hash_table]") {
+    SECTION("Inserting the same element should fail") {
+        lock_free_hash_table<int, int, 10> table;
+        {
+            REQUIRE(table.insert(5, 10));
+            int value;
+            REQUIRE(table.find(5, value));
+            REQUIRE(value == 10);
+        }
+        int value;
+        REQUIRE(table.find(5, value));
+        REQUIRE(value == 10);
+    }
+}
+
 
 TEST_CASE( "lock_free_queue", "[lock_free_queue]" ) {
     SECTION("push and pop") {
