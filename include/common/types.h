@@ -157,7 +157,7 @@ namespace common::types {
             T value;
             Node *next;
 
-            Node(const T &v) : value(v), next(nullptr) {}
+            explicit Node(const T &v) : value(v), next(nullptr) {}
         };
 
         std::atomic<Node *> head;
