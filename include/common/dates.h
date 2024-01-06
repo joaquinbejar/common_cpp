@@ -69,7 +69,6 @@ namespace common::dates {
         int years_;
     };
 
-
 }
 
 #endif //COMMON_DATES_H

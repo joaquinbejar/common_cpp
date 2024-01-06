@@ -99,4 +99,8 @@ TEST_CASE("epochToDateString Tests", "[epochToDateString]") {
     REQUIRE(epoch_to_date_string(1704347712) == "2024-01-04");
 
     REQUIRE(epoch_to_date_string(1704347712000) == "2024-01-04");
+
+    REQUIRE(epoch_to_date_string(1704530487) == "2024-01-06");
+
+    REQUIRE(epoch_to_date_string(1704538751) == "2024-01-06");
 }

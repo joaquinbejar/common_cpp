@@ -22,7 +22,6 @@ namespace common::dates {
         return oss.str();
     }
 
-
     // Function to get the Unix timestamp, optionally adjusted by a number of seconds
     time_t get_unix_timestamp(const int &seconds) {
         // Get the current system time as a time point
@@ -98,7 +97,6 @@ namespace common::dates {
         ++(*this);
         return temp;
     }
-
 
     DateRange::DateRange(size_t years) : years_(years) {}
 
