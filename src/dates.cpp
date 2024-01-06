@@ -6,6 +6,12 @@
 
 namespace common::dates {
 
+    bool is_valid_date_format(const std::string& date) {
+        std::regex date_format_regex(R"(\d{4}-\d{2}-\d{2})");
+
+        return std::regex_match(date, date_format_regex);
+    }
+
     std::string epoch_to_date_string(long long epoch) {
         if (epoch > 10000000000) {
             epoch /= 1000;

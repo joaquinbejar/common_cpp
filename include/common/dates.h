@@ -11,8 +11,11 @@
 #include <sstream>
 #include <ctime>
 #include <iterator>
+#include <regex>
 
 namespace common::dates {
+
+    bool is_valid_date_format(const std::string& date);
 
     std::string epoch_to_date_string(long long epoch);
 
