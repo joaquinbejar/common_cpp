@@ -6,6 +6,28 @@
 
 namespace common::dates {
 
+    bool is_valid_date_format(const std::string &date) {
+        std::regex date_format_regex(R"(\d{4}-\d{2}-\d{2})");
+
+        return std::regex_match(date, date_format_regex);
+    }
+
+    std::string epoch_to_date_string(long long epoch) {
+        if (epoch > 10000000000) {
+            epoch /= 1000;
+        }
+
+        std::chrono::time_point<std::chrono::system_clock> tp = std::chrono::system_clock::from_time_t(epoch);
+
+        std::time_t time = std::chrono::system_clock::to_time_t(tp);
+        std::tm *tm_ptr = std::localtime(&time);
+
+        std::ostringstream oss;
+        oss << std::put_time(tm_ptr, "%Y-%m-%d");
+
+        return oss.str();
+    }
+
     // Function to get the Unix timestamp, optionally adjusted by a number of seconds
     time_t get_unix_timestamp(const int &seconds) {
         // Get the current system time as a time point
@@ -21,7 +43,7 @@ namespace common::dates {
         return time_t_now;
     }
 
-    std::string get_current_date() {
+    date_fotmat_t get_current_date() {
         auto now = std::chrono::system_clock::now();
         std::time_t now_time = std::chrono::system_clock::to_time_t(now);
 
@@ -33,19 +55,34 @@ namespace common::dates {
         return ss.str();
     }
 
-    std::string get_yesterday_date() {
-    auto now = std::chrono::system_clock::now();
-    // Resta un día (24 horas)
-    auto yesterday = now - std::chrono::hours(24);
-    std::time_t yesterday_time = std::chrono::system_clock::to_time_t(yesterday);
+    date_fotmat_t get_yesterday_date() {
+        auto now = std::chrono::system_clock::now();
+        // Resta un día (24 horas)
+        auto yesterday = now - std::chrono::hours(24);
+        std::time_t yesterday_time = std::chrono::system_clock::to_time_t(yesterday);
 
-    std::tm yesterday_tm = *std::localtime(&yesterday_time);
+        std::tm yesterday_tm = *std::localtime(&yesterday_time);
 
-    std::stringstream ss;
-    ss << std::put_time(&yesterday_tm, "%Y-%m-%d");
+        std::stringstream ss;
+        ss << std::put_time(&yesterday_tm, "%Y-%m-%d");
 
-    return ss.str();
-}
+        return ss.str();
+    }
+
+    date_fotmat_t get_date_days_ago(size_t daysAgo) {
+        auto now = std::chrono::system_clock::now();
+
+        auto yesterday = now - std::chrono::hours(24 * daysAgo);
+        std::time_t yesterday_time = std::chrono::system_clock::to_time_t(yesterday);
+
+        std::tm yesterday_tm = *std::localtime(&yesterday_time);
+
+        std::stringstream ss;
+        ss << std::put_time(&yesterday_tm, "%Y-%m-%d");
+
+        return ss.str();
+    }
+
 
     bool isWeekend(const std::chrono::system_clock::time_point &date) {
         auto timeT = std::chrono::system_clock::to_time_t(date);
@@ -53,7 +90,7 @@ namespace common::dates {
         return localTime.tm_wday == 0 || localTime.tm_wday == 6; // Sunday or Saturday
     }
 
-    std::string formatDate(const std::chrono::system_clock::time_point &date) {
+    date_fotmat_t formatDate(const std::chrono::system_clock::time_point &date) {
         auto timeT = std::chrono::system_clock::to_time_t(date);
         std::tm tm = *std::localtime(&timeT);
         std::stringstream ss;
@@ -81,7 +118,6 @@ namespace common::dates {
         ++(*this);
         return temp;
     }
-
 
     DateRange::DateRange(size_t years) : years_(years) {}
 

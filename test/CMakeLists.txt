@@ -49,3 +49,16 @@ target_link_libraries(test_dates PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(test_dates PRIVATE
         common
 )
+
+add_executable(test_types test_types.cpp)
+target_include_directories(test_types
+        PRIVATE
+        ${COMMON_INCLUDE}
+        ${NLOHMANN_JSON_INCLUDE}
+        ${SIMPLE_COLOR_INCLUDE}
+)
+
+target_link_libraries(test_types PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(test_types PRIVATE
+        common
+)

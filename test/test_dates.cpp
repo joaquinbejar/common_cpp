@@ -8,7 +8,8 @@
 #include <set>
 #include <regex>
 
-using common::dates::DateRange;
+using namespace common::dates;
+//using common::dates::DateRange;
 
 TEST_CASE("DateRange Print", "[DateRange]") {
     SECTION("all days") {
@@ -32,7 +33,7 @@ TEST_CASE("DateRange Tests", "[DateRange]") {
         DateRange dateRange(0);
         std::set<int> weekendDays = {0, 6};
 
-        for (const auto& dateStr : dateRange) {
+        for (const auto &dateStr: dateRange) {
             std::tm tm = {};
             std::istringstream ss(dateStr);
             ss >> std::get_time(&tm, "%Y-%m-%d");
@@ -84,3 +85,59 @@ TEST_CASE("Current and yesterday date", "[DateRange]") {
         REQUIRE(yesterday_date == "2023-12-27");
     }
 }
+
+
+TEST_CASE("epochToDateString Tests", "[epochToDateString]") {
+    REQUIRE(epoch_to_date_string(1704067200) == "2024-01-01");
+
+    REQUIRE(epoch_to_date_string(1704067200000) == "2024-01-01");
+
+    REQUIRE(epoch_to_date_string(915148800) == "1999-01-01");
+
+    REQUIRE(epoch_to_date_string(2524608000) == "2050-01-01");
+
+    REQUIRE(epoch_to_date_string(1704347712) == "2024-01-04");
+
+    REQUIRE(epoch_to_date_string(1704347712000) == "2024-01-04");
+
+    REQUIRE(epoch_to_date_string(1704530487) == "2024-01-06");
+
+    REQUIRE(epoch_to_date_string(1704538751) == "2024-01-06");
+}
+
+
+TEST_CASE("is_valid_date_format Tests", "[is_valid_date_format]") {
+
+    SECTION("true") {
+        REQUIRE(is_valid_date_format("2024-01-01") == true);
+
+        REQUIRE(is_valid_date_format("2024-01-01") == true);
+
+        REQUIRE(is_valid_date_format("1999-01-01") == true);
+
+        REQUIRE(is_valid_date_format("2050-01-01") == true);
+
+        REQUIRE(is_valid_date_format("2024-01-04") == true);
+
+        REQUIRE(is_valid_date_format("2024-01-04") == true);
+
+        REQUIRE(is_valid_date_format("2024-01-06") == true);
+
+        REQUIRE(is_valid_date_format("2024-01-06") == true);
+    }
+
+    SECTION("false") {
+        REQUIRE(is_valid_date_format("2024-01-0") == false);
+
+        REQUIRE(is_valid_date_format("2024-01") == false);
+
+        REQUIRE(is_valid_date_format("199-01-01") == false);
+
+        REQUIRE(is_valid_date_format("2a50-01-01") == false);
+
+        REQUIRE(is_valid_date_format("hola") == false);
+
+        REQUIRE(is_valid_date_format("2024-01-0a") == false);
+    }
+}
+
