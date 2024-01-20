@@ -15,19 +15,23 @@
 
 namespace common::dates {
 
-    bool is_valid_date_format(const std::string& date);
+    typedef std::string date_fotmat_t;
+
+    bool is_valid_date_format(const std::string &date);
 
     std::string epoch_to_date_string(long long epoch);
 
     time_t get_unix_timestamp(const int &seconds = 0);
 
-    std::string get_current_date();
+    date_fotmat_t get_current_date();
 
-    std::string get_yesterday_date();
+    date_fotmat_t get_yesterday_date();
+
+    date_fotmat_t get_date_days_ago(size_t daysAgo);
 
     bool isWeekend(const std::chrono::system_clock::time_point &date);
 
-    std::string formatDate(const std::chrono::system_clock::time_point &date);
+    date_fotmat_t formatDate(const std::chrono::system_clock::time_point &date);
 
     class DateIterator {
     public:
