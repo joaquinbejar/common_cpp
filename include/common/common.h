@@ -10,12 +10,15 @@
 #include "simple_color/color.h"
 #include <iostream>
 #include <sstream>
-#include <random>
+#include <algorithm> // Para std::min
+#include <random>    // Para std::random_device y std::mt19937
 #include <mutex>
 #include <queue>
 #include <thread>
 #include <condition_variable>
 #include <chrono>
+#include <vector>
+#include <string>
 
 using json = nlohmann::json;
 
@@ -277,6 +280,29 @@ namespace common {
         size_t m_max_size;
         size_t m_timeout;
     };
+
+    template <typename T>
+    void shuffle_vector(std::vector<T>& vec) {
+        std::random_device rd;
+        std::mt19937 g(rd());
+        std::shuffle(vec.begin(), vec.end(), g);
+    }
+
+    template <typename T>
+    std::vector<T> extract_elements_from_vector(std::vector<T>& vec, int num_elements) {
+        std::vector<T> extracted_elements;
+
+        if (num_elements <= 0) {
+            return extracted_elements;
+        }
+
+        int elementsToExtract = std::min(num_elements, static_cast<int>(vec.size()));
+        extracted_elements.reserve(elementsToExtract);
+        std::move(vec.end() - elementsToExtract, vec.end(), std::back_inserter(extracted_elements));
+        vec.erase(vec.end() - elementsToExtract, vec.end());
+
+        return extracted_elements;
+    }
 }
 
 #endif //COMMON_COMMON_H

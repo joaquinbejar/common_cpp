@@ -6,12 +6,12 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 
+using namespace common;
 // ---------------------------------------------------------------------------------------------------
 TEST_CASE("Declare config", "[Common]") {
 
     REQUIRE(true);
 }
-
 
 TEST_CASE("to_upper works correctly", "[to_upper]") {
     using common::to_upper;
@@ -66,7 +66,6 @@ TEST_CASE("to_hash works correctly", "[to_hash]") {
     }
 }
 
-
 TEST_CASE("get_env_variable_set_string works correctly", "[get_env_variable_set_string]") {
     using common::get_env_variable_set_string;
 
@@ -102,7 +101,6 @@ TEST_CASE("get_env_variable_set_string works correctly", "[get_env_variable_set_
     }
 }
 
-
 TEST_CASE("get_env_variable_int works correctly", "[get_env_variable_int]") {
     using common::get_env_variable_int;
 
@@ -136,7 +134,6 @@ TEST_CASE("get_env_variable_int works correctly", "[get_env_variable_int]") {
         REQUIRE(result == 99);
     }
 }
-
 
 TEST_CASE("get_env_variable_bool works correctly", "[get_env_variable_bool]") {
     using common::get_env_variable_bool;
@@ -178,7 +175,6 @@ TEST_CASE("get_env_variable_bool works correctly", "[get_env_variable_bool]") {
     }
 }
 
-
 TEST_CASE("get_env_variable_long works correctly", "[get_env_variable_long]") {
     using common::get_env_variable_long;
 
@@ -213,7 +209,6 @@ TEST_CASE("get_env_variable_long works correctly", "[get_env_variable_long]") {
     }
 }
 
-
 TEST_CASE("get_env_variable_string works correctly", "[get_env_variable_string]") {
     using common::get_env_variable_string;
 
@@ -241,7 +236,6 @@ TEST_CASE("get_env_variable_string works correctly", "[get_env_variable_string]"
         REQUIRE(result == "default_value");
     }
 }
-
 
 TEST_CASE("key_generator works correctly", "[key_generator]") {
     using common::key_generator;
@@ -271,7 +265,6 @@ TEST_CASE("key_generator works correctly", "[key_generator]") {
         }
     }
 }
-
 
 TEST_CASE("setTojson works correctly", "[setTojson]") {
     using common::set_to_json;
@@ -431,7 +424,6 @@ TEST_CASE("Testing ThreadQueue functionality", "[queue]") {
     }
 }
 
-
 TEST_CASE("Testing ThreadQueueWithMaxSize functionality", "[queue]") {
     common::ThreadQueueWithMaxSize<int> intQueue(100);
     common::ThreadQueueWithMaxSize<std::string> stringQueue(100);
@@ -516,5 +508,77 @@ TEST_CASE("Testing ThreadQueueWithMaxSize functionality", "[queue]") {
         common::Stats stats = stringQueue.get_stats();
         REQUIRE(stats.get_empty() > 0);
         REQUIRE(stats.get_full() > 0);
+    }
+}
+
+TEST_CASE("Shuffle vector") {
+    std::vector<int> vec = {1, 2, 3, 4, 5};
+    auto originalVec = vec;
+
+    SECTION("Size remains constant after shuffling") {
+        shuffle_vector(vec);
+        REQUIRE(vec.size() == originalVec.size());
+    }
+}
+
+TEST_CASE("Extract elements from vector string") {
+    std::vector<std::string> vec = {"a", "b", "c", "d", "e"};
+    int numElements = 3;
+    auto originalSize = vec.size();
+
+    SECTION("Extract correct number of elements") {
+        auto extracted = extract_elements_from_vector(vec, numElements);
+        REQUIRE(extracted.size() == numElements);
+    }
+
+    SECTION("Original vector is reduced") {
+        extract_elements_from_vector(vec, numElements);
+        REQUIRE(vec.size() == originalSize - numElements);
+    }
+
+    SECTION("Extracted elements are the last ones") {
+        auto extracted = extract_elements_from_vector(vec, numElements);
+        REQUIRE(extracted == std::vector<std::string>({"c", "d", "e"}));
+    }
+
+    SECTION("Handle more elements than size") {
+        auto extracted = extract_elements_from_vector(vec, 10);
+        REQUIRE(extracted.size() == originalSize);
+    }
+
+    SECTION("Handle negative number of elements") {
+        auto extracted = extract_elements_from_vector(vec, -3);
+        REQUIRE(extracted.empty());
+    }
+}
+
+TEST_CASE("Extract elements from vector size_t") {
+    std::vector<size_t> vec = {1, 2, 3, 4, 5};
+    int numElements = 3;
+    auto originalSize = vec.size();
+
+    SECTION("Extract correct number of elements") {
+        auto extracted = extract_elements_from_vector(vec, numElements);
+        REQUIRE(extracted.size() == numElements);
+    }
+
+    SECTION("Original vector is reduced") {
+        extract_elements_from_vector(vec, numElements);
+        REQUIRE(vec.size() == originalSize - numElements);
+    }
+
+    SECTION("Extracted elements are the last ones") {
+        auto extracted = extract_elements_from_vector(vec, numElements);
+        REQUIRE(extracted == std::vector<size_t>({3, 4, 5}));
+    }
+
+    SECTION("Handle more elements than size") {
+        auto extracted = extract_elements_from_vector(vec, 10);
+        REQUIRE(extracted.size() == originalSize);
+    }
+
+    SECTION("Handle negative number of elements") {
+        auto extracted = extract_elements_from_vector(vec, -3);
+        REQUIRE(extracted.empty());
     }
 }
