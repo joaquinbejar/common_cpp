@@ -149,6 +149,9 @@ namespace common {
         char *c_queue = getenv(key.c_str());
 
         if (!c_queue) {
+            if (default_value.empty()) {
+                return {};
+            }
             return {default_value}; // Return default value if env var is not set
         }
 

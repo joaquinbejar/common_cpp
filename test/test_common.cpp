@@ -645,19 +645,19 @@ TEST_CASE("Get vector from env variable") {
         REQUIRE(result[0] == "default_value");
     }
 
-    SECTION("empty") {
-        setenv("MY_EMPTY", "", 1);
-        std::vector<std::string> result = get_env_variable_vector_string("MY_EMPTY", "default_value");
+    SECTION("Empty1") {
+        setenv("MY_EMPTY1", "", 1);
+        std::vector<std::string> result = get_env_variable_vector_string("MY_EMPTY1", "default_value");
         REQUIRE(result.empty());
     }
 
-    SECTION("empty2") {
-        std::vector<std::string> result = get_env_variable_vector_string("MY_EMPTY", "");
+    SECTION("Empty2") {
+        std::vector<std::string> result = get_env_variable_vector_string("MY_EMPTY2", "");
         REQUIRE(result.empty());
     }
 
-    SECTION("empty3") {
-        std::vector<std::string> result = get_env_variable_vector_string("MY_EMPTY", "");
+    SECTION("Empty3") {
+        std::vector<std::string> result = get_env_variable_vector_string("MY_EMPTY3", "");
         REQUIRE(result.empty());
     }
 
