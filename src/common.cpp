@@ -144,6 +144,30 @@ namespace common {
         }
     }
 
+    std::vector<std::string> get_env_variable_vector_string(std::string const &key, std::string const &default_value){
+
+        char *c_queue = getenv(key.c_str());
+
+        if (!c_queue) {
+            return {default_value}; // Return default value if env var is not set
+        }
+
+        std::string value_str(c_queue);
+        std::vector<std::string> result;
+        std::istringstream value_stream(value_str);
+        std::string token;
+
+        while (std::getline(value_stream, token, ',')) {
+            std::istringstream token_stream(token);
+            std::string sub_token;
+            while (token_stream >> sub_token) {
+                result.push_back(sub_token);
+            }
+        }
+
+        return result;
+    }
+
     std::string to_string_for_json(const std::string &item) {
         return "\"" + item + "\"";
     }

@@ -582,3 +582,67 @@ TEST_CASE("Extract elements from vector size_t") {
         REQUIRE(extracted.empty());
     }
 }
+
+TEST_CASE("Get vector fron env variable") {
+
+    SECTION("single value") {
+        setenv("MY_ENV", "value1", 1);
+        std::vector<std::string> result = get_env_variable_vector_string("MY_ENV", "default_value");
+        REQUIRE(result.size() == 1);
+        REQUIRE(result[0] == "value1");
+    }
+
+    SECTION("Values with comas") {
+        setenv("MY_ENV_COMMAS", "value1,value2,value3", 1);
+        std::vector<std::string> result = get_env_variable_vector_string("MY_ENV_COMMAS", "default_value");
+        REQUIRE(result.size() == 3);
+        REQUIRE(result[0] == "value1");
+        REQUIRE(result[1] == "value2");
+        REQUIRE(result[2] == "value3");
+    }
+
+    SECTION("Values with spaces") {
+        setenv("MY_ENV_SPACES", "value1 value2 value3", 1);
+        std::vector<std::string> result = get_env_variable_vector_string("MY_ENV_SPACES", "default_value");
+        REQUIRE(result.size() == 3);
+        REQUIRE(result[0] == "value1");
+        REQUIRE(result[1] == "value2");
+        REQUIRE(result[2] == "value3");
+    }
+
+    SECTION("Values mix 1") {
+        setenv("MY_ENV_MIX1", "value1, value2,value3", 1);
+        std::vector<std::string> result = get_env_variable_vector_string("MY_ENV_MIX1", "default_value");
+        REQUIRE(result.size() == 3);
+        REQUIRE(result[0] == "value1");
+        REQUIRE(result[1] == "value2");
+        REQUIRE(result[2] == "value3");
+    }
+
+    SECTION("Values mix 2") {
+        setenv("MY_ENV_MIX2", "value1  value2 value3    value4", 1);
+        std::vector<std::string> result = get_env_variable_vector_string("MY_ENV_MIX2", "default_value");
+        REQUIRE(result.size() == 4);
+        REQUIRE(result[0] == "value1");
+        REQUIRE(result[1] == "value2");
+        REQUIRE(result[2] == "value3");
+        REQUIRE(result[3] == "value4");
+    }
+
+    SECTION("Values mix 3") {
+        setenv("MY_ENV_MIX3", "value1  ,value2, value3,    value4", 1);
+        std::vector<std::string> result = get_env_variable_vector_string("MY_ENV_MIX3", "default_value");
+        REQUIRE(result.size() == 4);
+        REQUIRE(result[0] == "value1");
+        REQUIRE(result[1] == "value2");
+        REQUIRE(result[2] == "value3");
+        REQUIRE(result[3] == "value4");
+    }
+
+    SECTION("Default") {
+        std::vector<std::string> result = get_env_variable_vector_string("DEFAULT_VALUE", "default_value");
+        REQUIRE(result.size() == 1);
+        REQUIRE(result[0] == "default_value");
+    }
+
+}
