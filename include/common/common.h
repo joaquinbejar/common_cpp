@@ -110,6 +110,8 @@ namespace common {
 
     bool get_env_variable_bool(std::string const &key, bool const &default_value);
 
+    std::vector<std::string> get_env_variable_vector_string(std::string const &key, std::string const &default_value);
+
     struct Stats {
         size_t number_of_times_queue_was_empty;
         size_t number_of_times_queue_was_full;
