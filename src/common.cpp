@@ -144,15 +144,15 @@ namespace common {
         }
     }
 
-    std::vector<std::string> get_env_variable_vector_string(std::string const &key, std::string const &default_value){
 
+    std::vector<std::string> get_env_variable_vector_string(std::string const &key, std::string const &default_value) {
         char *c_queue = getenv(key.c_str());
 
         if (!c_queue) {
             if (default_value.empty()) {
                 return {};
             }
-            return {default_value}; // Return default value if env var is not set
+            c_queue = const_cast<char*>(default_value.c_str()); // Use default value if env var is not set
         }
 
         std::string value_str(c_queue);
@@ -165,6 +165,8 @@ namespace common {
             std::string sub_token;
             while (token_stream >> sub_token) {
                 result.push_back(sub_token);
+                // Skip remaining whitespace in the token_stream
+                token_stream >> std::ws;
             }
         }
 

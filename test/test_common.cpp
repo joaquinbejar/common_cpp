@@ -656,9 +656,22 @@ TEST_CASE("Get vector from env variable") {
         REQUIRE(result.empty());
     }
 
-    SECTION("Empty3") {
-        std::vector<std::string> result = get_env_variable_vector_string("MY_EMPTY3", "");
-        REQUIRE(result.empty());
+    SECTION("Default with multiplex 1") {
+        std::vector<std::string> result = get_env_variable_vector_string("MY_ENV_MIX4", "value1  ,value2, value3,    value4");
+        REQUIRE(result.size() == 4);
+        REQUIRE(result[0] == "value1");
+        REQUIRE(result[1] == "value2");
+        REQUIRE(result[2] == "value3");
+        REQUIRE(result[3] == "value4");
+    }
+
+    SECTION("Default with multiplex 2") {
+        std::vector<std::string> result = get_env_variable_vector_string("MY_ENV_MIX5", "value1  value2 value3    value4");
+        REQUIRE(result.size() == 4);
+        REQUIRE(result[0] == "value1");
+        REQUIRE(result[1] == "value2");
+        REQUIRE(result[2] == "value3");
+        REQUIRE(result[3] == "value4");
     }
 
 }
