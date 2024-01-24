@@ -583,7 +583,7 @@ TEST_CASE("Extract elements from vector size_t") {
     }
 }
 
-TEST_CASE("Get vector fron env variable") {
+TEST_CASE("Get vector from env variable") {
 
     SECTION("single value") {
         setenv("MY_ENV", "value1", 1);
@@ -643,6 +643,22 @@ TEST_CASE("Get vector fron env variable") {
         std::vector<std::string> result = get_env_variable_vector_string("DEFAULT_VALUE", "default_value");
         REQUIRE(result.size() == 1);
         REQUIRE(result[0] == "default_value");
+    }
+
+    SECTION("Empty1") {
+        setenv("MY_EMPTY1", "", 1);
+        std::vector<std::string> result = get_env_variable_vector_string("MY_EMPTY1", "default_value");
+        REQUIRE(result.empty());
+    }
+
+    SECTION("Empty2") {
+        std::vector<std::string> result = get_env_variable_vector_string("MY_EMPTY2", "");
+        REQUIRE(result.empty());
+    }
+
+    SECTION("Empty3") {
+        std::vector<std::string> result = get_env_variable_vector_string("MY_EMPTY3", "");
+        REQUIRE(result.empty());
     }
 
 }
