@@ -58,13 +58,20 @@ namespace common::instructions {
     Selector get_selector_from_string(const selector_t &selector);
 
     template<typename T>
+    concept JsonSerializable = requires(T t, const nlohmann::json& j) {
+        { t.to_json() } -> std::same_as<nlohmann::json>;
+        { t.from_json(j) } -> std::same_as<void>;
+    };
+
+    template<typename T>
+    requires JsonSerializable<T>
     struct Instructions {
         Type type = Type::NONE;
         Selector selector = Selector::NONE;
         std::vector<std::string> tickers;
         T other;
 
-        json to_json() const {
+        [[nodiscard]] json to_json() const {
             json result;
             result["type"] = get_type_name(type);
             result["selector"] = get_selector_name(selector);
@@ -80,7 +87,6 @@ namespace common::instructions {
             if (j.contains("other"))
                 other.from_json(j["other"]);
         }
-
     };
 
 }

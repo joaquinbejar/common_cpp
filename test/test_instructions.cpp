@@ -39,13 +39,11 @@ TEST_CASE("Selector enum and functions") {
     SECTION("get_selector_name") {
         REQUIRE(get_selector_name(Selector::NONE) == "");
         REQUIRE(get_selector_name(Selector::ALL) == "all");
-        // Add more REQUIRE statements for each Selector value
     }
 
     SECTION("get_selector_from_string") {
         REQUIRE(get_selector_from_string("all") == Selector::ALL);
         REQUIRE(get_selector_from_string("invalid") == Selector::NONE);
-        // Add more REQUIRE statements for each valid and invalid input
     }
 }
 
