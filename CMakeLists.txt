@@ -20,6 +20,7 @@ add_library(common STATIC
         src/dates.cpp include/common/dates.h
         src/sql_utils.cpp include/common/sql_utils.h
         src/dates.cpp include/common/dates.h
+        src/instructions.cpp include/common/instructions.h
 )
 target_include_directories(common
         PRIVATE
@@ -45,6 +46,5 @@ if (NOT NO_COMMON_TESTS)
     )
     FETCHCONTENT_GETPROPERTIES(Catch2)
     FETCHCONTENT_MAKEAVAILABLE(Catch2)
-
     add_subdirectory(test)
 endif ()

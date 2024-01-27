@@ -305,6 +305,17 @@ namespace common {
 
         return extracted_elements;
     }
+
+    template<typename T, typename K, typename V>
+    T find_key_from_value(const std::map<K, V>& map, const V& value, const T& defaultVal){
+        for (auto const& [key, val] : map)
+        {
+            if (val == value) {
+                return key;
+            }
+        }
+        return defaultVal;
+    }
 }
 
 #endif //COMMON_COMMON_H
