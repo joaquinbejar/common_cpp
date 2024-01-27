@@ -35,7 +35,7 @@ TEST_CASE("Type enum and functions") {
 
 TEST_CASE("Selector enum and functions") {
     SECTION("get_selector_name") {
-        REQUIRE(get_selector_name(Selector::NONE) == "");
+        REQUIRE(get_selector_name(Selector::NONE).empty());
         REQUIRE(get_selector_name(Selector::ALL) == "all");
     }
 
