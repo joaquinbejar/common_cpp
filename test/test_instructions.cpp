@@ -25,13 +25,11 @@ TEST_CASE("Type enum and functions") {
     SECTION("get_type_name") {
         REQUIRE(get_type_name(Type::NONE).empty());
         REQUIRE(get_type_name(Type::TICKER) == "ticker");
-        // Add more REQUIRE statements for each Type value
     }
 
     SECTION("get_type_from_string") {
         REQUIRE(get_type_from_string("ticker") == Type::TICKER);
         REQUIRE(get_type_from_string("invalid") == Type::NONE);
-        // Add more REQUIRE statements for each valid and invalid input
     }
 }
 
