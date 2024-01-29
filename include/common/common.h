@@ -63,7 +63,7 @@ namespace common {
 
     template<typename T>
     std::set<T> join_sets(const std::set<T> &v1, const std::set<T> &v2) {
-        std::set<T> output;
+        std::set < T > output;
         std::set_union(v1.begin(), v1.end(),
                        v2.begin(), v2.end(),
                        std::inserter(output, output.begin()));
@@ -282,15 +282,15 @@ namespace common {
         size_t m_timeout;
     };
 
-    template <typename T>
-    void shuffle_vector(std::vector<T>& vec) {
+    template<typename T>
+    void shuffle_vector(std::vector<T> &vec) {
         std::random_device rd;
         std::mt19937 g(rd());
         std::shuffle(vec.begin(), vec.end(), g);
     }
 
-    template <typename T>
-    std::vector<T> extract_elements_from_vector(std::vector<T>& vec, int num_elements) {
+    template<typename T>
+    std::vector<T> extract_elements_from_vector(std::vector<T> &vec, int num_elements) {
         std::vector<T> extracted_elements;
 
         if (num_elements <= 0) {
@@ -306,15 +306,17 @@ namespace common {
     }
 
     template<typename T, typename K, typename V>
-    T find_key_from_value(const std::map<K, V>& map, const V& value, const T& defaultVal){
-        for (auto const& [key, val] : map)
-        {
+    T find_key_from_value(const std::map<K, V> &map, const V &value, const T &defaultVal) {
+        for (auto const &[key, val]: map) {
             if (val == value) {
                 return key;
             }
         }
         return defaultVal;
     }
+
+    void print_overwriteable_lines(const std::string &line1, const std::string &line2, const std::string &line3,
+                                 const std::string &line4);
 }
 
 #endif //COMMON_COMMON_H
