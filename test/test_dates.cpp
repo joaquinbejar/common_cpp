@@ -141,3 +141,38 @@ TEST_CASE("is_valid_date_format Tests", "[is_valid_date_format]") {
     }
 }
 
+TEST_CASE("date_to_timestamp Tests", "[date_to_timestamp]") {
+
+    SECTION("true") {
+        REQUIRE(date_to_timestamp("2024-01-31", -7200000) == 1706648400000);
+
+        REQUIRE(date_to_timestamp("2024-01-01") == 1704063600000);
+
+        REQUIRE(date_to_timestamp("1999-01-01") == 915145200000);
+
+        REQUIRE(date_to_timestamp("2050-01-01") == 2524604400000);
+
+        REQUIRE(date_to_timestamp("2024-01-04") == 1704322800000);
+
+        REQUIRE(date_to_timestamp("2024-01-04") == 1704322800000);
+
+        REQUIRE(date_to_timestamp("2024-01-06") == 1704495600000);
+
+        REQUIRE(date_to_timestamp("2024-01-06") == 1704495600000);
+    }
+
+    SECTION("false") {
+        REQUIRE_THROWS(date_to_timestamp("2024-01-0"));
+
+        REQUIRE_THROWS(date_to_timestamp("2024-01") );
+
+        REQUIRE_THROWS(date_to_timestamp("199-01-01") );
+
+        REQUIRE_THROWS(date_to_timestamp("2a50-01-01") );
+
+        REQUIRE_THROWS(date_to_timestamp("hola"));
+
+        REQUIRE_THROWS(date_to_timestamp("2024-01-0a"));
+    }
+
+}

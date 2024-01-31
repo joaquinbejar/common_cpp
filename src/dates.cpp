@@ -43,7 +43,7 @@ namespace common::dates {
         return time_t_now;
     }
 
-    date_fotmat_t get_current_date() {
+    date_format_t get_current_date() {
         auto now = std::chrono::system_clock::now();
         std::time_t now_time = std::chrono::system_clock::to_time_t(now);
 
@@ -55,7 +55,7 @@ namespace common::dates {
         return ss.str();
     }
 
-    date_fotmat_t get_yesterday_date() {
+    date_format_t get_yesterday_date() {
         auto now = std::chrono::system_clock::now();
         // Resta un día (24 horas)
         auto yesterday = now - std::chrono::hours(24);
@@ -69,7 +69,7 @@ namespace common::dates {
         return ss.str();
     }
 
-    date_fotmat_t get_date_days_ago(size_t daysAgo) {
+    date_format_t get_date_days_ago(size_t daysAgo) {
         auto now = std::chrono::system_clock::now();
 
         auto yesterday = now - std::chrono::hours(24 * daysAgo);
@@ -90,7 +90,7 @@ namespace common::dates {
         return localTime.tm_wday == 0 || localTime.tm_wday == 6; // Sunday or Saturday
     }
 
-    date_fotmat_t formatDate(const std::chrono::system_clock::time_point &date) {
+    date_format_t formatDate(const std::chrono::system_clock::time_point &date) {
         auto timeT = std::chrono::system_clock::to_time_t(date);
         std::tm tm = *std::localtime(&timeT);
         std::stringstream ss;
@@ -127,6 +127,23 @@ namespace common::dates {
 
     DateIterator DateRange::end() {
         return DateIterator(years_ * 365); // Simplification, does not account for leap years
+    }
+
+    unsigned long long date_to_timestamp(const date_format_t& date , long long offset) {
+        if (date.empty()) {
+            throw std::runtime_error("Date is empty.");
+        }
+
+        std::tm tm = {};
+        std::stringstream ss(date);
+
+        ss >> std::get_time(&tm, "%Y-%m-%d");
+        if (!is_valid_date_format(date) || ss.fail()) {
+            throw std::runtime_error("Date format is invalid.");
+        }
+
+        std::chrono::system_clock::time_point tp = std::chrono::system_clock::from_time_t(std::mktime(&tm));
+        return std::chrono::duration_cast<std::chrono::milliseconds>(tp.time_since_epoch()).count() + offset;
     }
 
 }

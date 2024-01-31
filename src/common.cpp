@@ -206,17 +206,6 @@ namespace common {
         return number_of_times_queue_was_full;
     }
 
-    void print_overwriteable_lines(const std::string &line1, const std::string &line2, const std::string &line3,
-                                   const std::string &line4) {
-        std::cout << "\033[4A";
-
-        std::cout << "\r" << line1 << std::string(50 - line1.length(), ' ') << "\n";
-        std::cout << "\r" << line2 << std::string(50 - line2.length(), ' ') << "\n";
-        std::cout << "\r" << line3 << std::string(50 - line3.length(), ' ') << "\n";
-        std::cout << "\r" << line4 << std::string(50 - line4.length(), ' ');
-
-        std::cout << std::flush;
-    }
 
 
 }

@@ -15,7 +15,7 @@
 
 namespace common::dates {
 
-    typedef std::string date_fotmat_t;
+    typedef std::string date_format_t;
 
     bool is_valid_date_format(const std::string &date);
 
@@ -23,15 +23,15 @@ namespace common::dates {
 
     time_t get_unix_timestamp(const int &seconds = 0);
 
-    date_fotmat_t get_current_date();
+    date_format_t get_current_date();
 
-    date_fotmat_t get_yesterday_date();
+    date_format_t get_yesterday_date();
 
-    date_fotmat_t get_date_days_ago(size_t daysAgo);
+    date_format_t get_date_days_ago(size_t daysAgo);
 
     bool isWeekend(const std::chrono::system_clock::time_point &date);
 
-    date_fotmat_t formatDate(const std::chrono::system_clock::time_point &date);
+    date_format_t formatDate(const std::chrono::system_clock::time_point &date);
 
     class DateIterator {
     public:
@@ -75,6 +75,8 @@ namespace common::dates {
     private:
         int years_;
     };
+
+    unsigned long long date_to_timestamp(const date_format_t& date, long long offset = 0);
 
 }
 
