@@ -94,7 +94,7 @@ namespace common {
         // Use a stringstream to split the string
         std::stringstream ss(env_value);
         std::string token;
-        std::set<std::string> result;
+        std::set < std::string > result;
         while (std::getline(ss, token, ' ')) {
             // Further split token by comma
             std::stringstream inner_ss(token);
@@ -152,7 +152,7 @@ namespace common {
             if (default_value.empty()) {
                 return {};
             }
-            c_queue = const_cast<char*>(default_value.c_str()); // Use default value if env var is not set
+            c_queue = const_cast<char *>(default_value.c_str()); // Use default value if env var is not set
         }
 
         std::string value_str(c_queue);
@@ -205,6 +205,7 @@ namespace common {
         std::lock_guard<std::mutex> lock(stats_mutex);
         return number_of_times_queue_was_full;
     }
+
 
 
 }

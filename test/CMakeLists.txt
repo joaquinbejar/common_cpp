@@ -62,3 +62,4 @@ target_link_libraries(test_types PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(test_types PRIVATE
         common
 )
+

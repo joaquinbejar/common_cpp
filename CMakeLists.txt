@@ -45,6 +45,5 @@ if (NOT NO_COMMON_TESTS)
     )
     FETCHCONTENT_GETPROPERTIES(Catch2)
     FETCHCONTENT_MAKEAVAILABLE(Catch2)
-
     add_subdirectory(test)
 endif ()
