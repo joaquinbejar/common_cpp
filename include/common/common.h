@@ -1,5 +1,5 @@
 //
-// Created by Joaquin Bejar Garcia on 19/10/23.
+// Created by Joaquin Bejar Garcia on 19/10/23. v0.1.5
 //
 
 #ifndef COMMON_COMMON_H
@@ -63,7 +63,7 @@ namespace common {
 
     template<typename T>
     std::set<T> join_sets(const std::set<T> &v1, const std::set<T> &v2) {
-        std::set < T > output;
+        std::set<T> output;
         std::set_union(v1.begin(), v1.end(),
                        v2.begin(), v2.end(),
                        std::inserter(output, output.begin()));
@@ -316,7 +316,7 @@ namespace common {
     }
 
     void print_overwriteable_lines(const std::string &line1, const std::string &line2, const std::string &line3,
-                                 const std::string &line4);
+                                   const std::string &line4);
 }
 
 #endif //COMMON_COMMON_H

@@ -129,7 +129,7 @@ namespace common::dates {
         return DateIterator(years_ * 365); // Simplification, does not account for leap years
     }
 
-    unsigned long long date_to_timestamp(const date_format_t& date , long long offset) {
+    unsigned long long date_to_timestamp(const date_format_t &date, long long offset) {
         if (date.empty()) {
             throw std::runtime_error("Date is empty.");
         }
