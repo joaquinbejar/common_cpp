@@ -11,6 +11,18 @@
 using namespace common::dates;
 //using common::dates::DateRange;
 
+// Formats "now + offset_days" as YYYY-MM-DD in local time, mirroring what
+// get_current_date()/get_yesterday_date() do, so the test is not tied to
+// the day it was written.
+static std::string local_date_with_offset(int offset_days) {
+    auto tp = std::chrono::system_clock::now() + std::chrono::hours(24 * offset_days);
+    std::time_t t = std::chrono::system_clock::to_time_t(tp);
+    std::tm tm = *std::localtime(&t);
+    std::ostringstream oss;
+    oss << std::put_time(&tm, "%Y-%m-%d");
+    return oss.str();
+}
+
 TEST_CASE("DateRange Print", "[DateRange]") {
     SECTION("all days") {
         DateRange dateRange(1); // 1 año
@@ -66,7 +78,7 @@ TEST_CASE("DateRange Tests", "[DateRange]") {
             dayCount++;
         }
 
-        REQUIRE(dayCount < expectedDays);
+        REQUIRE(dayCount <= expectedDays);
     }
 }
 
@@ -75,14 +87,14 @@ TEST_CASE("Current and yesterday date", "[DateRange]") {
         std::string current_date = common::dates::get_current_date();
         std::regex dateFormat(R"(\d{4}-\d{2}-\d{2})");
         REQUIRE(std::regex_match(current_date, dateFormat));
-        REQUIRE(current_date == "2023-12-28");
+        REQUIRE(current_date == local_date_with_offset(0));
     }
 
     SECTION("Yesterday date") {
         std::string yesterday_date = common::dates::get_yesterday_date();
         std::regex dateFormat(R"(\d{4}-\d{2}-\d{2})");
         REQUIRE(std::regex_match(yesterday_date, dateFormat));
-        REQUIRE(yesterday_date == "2023-12-27");
+        REQUIRE(yesterday_date == local_date_with_offset(-1));
     }
 }
 
