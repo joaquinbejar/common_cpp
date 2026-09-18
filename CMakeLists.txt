@@ -11,6 +11,12 @@ if (CMAKE_DEBUG)
 endif ()
 
 include(FetchContent)
+# Declared before the sub-dependencies so this pin wins over the Catch2 they
+# declare themselves (FetchContent honours the first declaration).
+FetchContent_Declare(Catch2
+        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+        GIT_TAG v3.16.0
+)
 include(cmake/nlohmann_json.cmake)
 include(cmake/simple_color.cmake)
 
@@ -38,11 +44,6 @@ install(DIRECTORY include/ DESTINATION include)
 option(NO_COMMON_TESTS "common Disable Current tests" OFF)
 
 if (NOT NO_COMMON_TESTS)
-    include(FetchContent)
-    FetchContent_Declare(Catch2
-            GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-            GIT_TAG v3.4.0
-    )
     FETCHCONTENT_GETPROPERTIES(Catch2)
     FETCHCONTENT_MAKEAVAILABLE(Catch2)
     add_subdirectory(test)
